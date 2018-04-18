@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.example.dima.flickrtesttask.R;
 import com.example.dima.flickrtesttask.fragment.MapsFragment;
 import com.example.dima.flickrtesttask.fragment.RecentsFragment;
 
@@ -36,9 +37,9 @@ public class FlickrFragmentAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Recents";
+                return context.getString(R.string.recents);
             case 1:
-                return "Map";
+                return context.getString(R.string.map);
         }
         return "";
     }

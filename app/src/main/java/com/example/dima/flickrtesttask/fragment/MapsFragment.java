@@ -109,7 +109,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         setMyLocation(true);
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.getUiSettings().isMapToolbarEnabled();
-        // Add a marker in Sydney and move the camera
         LatLng minsk = new LatLng(53.9008552, 27.5413905);
         mMap.addMarker(new MarkerOptions().position(minsk).title("Hello Minsk!"));
 
@@ -122,6 +121,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     public void addGeoMarker() {
         if (Common.photos != null) {
+            mMap.clear();
             for (int i = 0; i < Common.photos.size(); i++) {
                 final int finalI = i;
                 service.getLocation(Common.API_KEY, Common.photos.get(i).getId(), Common.extras).enqueue(new Callback<PhotoLocation>() {
@@ -134,8 +134,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                                 Double.parseDouble(location.getLatitude()),
                                 Double.parseDouble(location.getLongitude()));
                         String title = "";
-                        if (Common.photos.get(finalI).getTitle().length() > 10) {
-                            title = Common.photos.get(finalI).getTitle().substring(0, 10);
+                        if (Common.photos.get(finalI).getTitle().length() > 20) {
+                            title = Common.photos.get(finalI).getTitle().substring(0, 20);
                         } else {
                             title = Common.photos.get(finalI).getTitle();
                         }
@@ -150,10 +150,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 });
             }
         }
+
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.toolbar_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
         final MenuItem item = menu.findItem(R.id.action_search);

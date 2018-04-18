@@ -152,6 +152,7 @@ public class RecentsFragment extends Fragment{
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if(query != "") {
+                    dialog.show();
                     service.getSearchPhoto(Common.API_KEY, Common.extras,Common.hasGeo, query).enqueue(new Callback<PhotoGallery>() {
                         @Override
                         public void onResponse(Call<PhotoGallery> call, Response<PhotoGallery> response) {
@@ -163,6 +164,7 @@ public class RecentsFragment extends Fragment{
                             //Save to cache
                             Paper.book().write("cache", new Gson().toJson(response.body()));
                             swipeRefreshLayout.setRefreshing(false);
+                            dialog.dismiss();
                         }
 
                         @Override

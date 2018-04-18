@@ -22,7 +22,7 @@ public class Common {
     public static int perPage = 100;
     public static int page = 1;
 
-    public static List<Photo> photos = null;
+    public static List<Photo> photos = null; // feature to use in RecentFragment (no added)
 
 
     public static FlickrService getFlcikrService(Gson gson)
