@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.example.dima.flickrtesttask.fragment.GoogleMapsFragment;
+import com.example.dima.flickrtesttask.fragment.MapsFragment;
 import com.example.dima.flickrtesttask.fragment.RecentsFragment;
 
 public class FlickrFragmentAdapter extends FragmentPagerAdapter {
@@ -22,7 +22,7 @@ public class FlickrFragmentAdapter extends FragmentPagerAdapter {
         if (position == 0) {
             return RecentsFragment.getInstance();
         } else if (position == 1) {
-            return GoogleMapsFragment.getInstance(context);
+            return MapsFragment.getInstance();
         } else return null;
     }
 
