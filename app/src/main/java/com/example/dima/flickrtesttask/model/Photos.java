@@ -12,7 +12,7 @@ public class Photos {
     private Integer pages;
     private Integer perpage;
     private Integer total;
-    private List<Photo> photo;
+    private List<Photo> photo = null;
 
     public Photos() {
     }

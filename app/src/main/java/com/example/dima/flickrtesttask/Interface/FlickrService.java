@@ -24,6 +24,7 @@ public interface FlickrService {
     Call<PhotoGallery>
     getSearchPhoto(
             @Query("api_key") String apiKey,
+            @Query("extras") String extras,
             @Query("text") String search
     );
 

@@ -1,9 +1,15 @@
 package com.example.dima.flickrtesttask;
 import com.example.dima.flickrtesttask.adapter.FlickrFragmentAdapter;
+import com.example.dima.flickrtesttask.fragment.RecentsFragment;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,5 +33,4 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout = findViewById(R.id.tabLayout);
         mTabLayout.setupWithViewPager(mViewPager);
     }
-
 }

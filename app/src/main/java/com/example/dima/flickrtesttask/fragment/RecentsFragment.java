@@ -1,21 +1,26 @@
 package com.example.dima.flickrtesttask.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 
 import com.example.dima.flickrtesttask.Interface.FlickrService;
+import com.example.dima.flickrtesttask.MainActivity;
 import com.example.dima.flickrtesttask.R;
 import com.example.dima.flickrtesttask.adapter.ListAdapter;
 import com.example.dima.flickrtesttask.common.Common;
@@ -33,7 +38,7 @@ import retrofit2.Response;
  * Created by Dima on 17.04.2018.
  */
 
-public class RecentsFragment extends Fragment {
+public class RecentsFragment extends Fragment{
     private static RecentsFragment sRecentsFragment = null;
 
     private RecyclerView recyclerView;
@@ -41,7 +46,7 @@ public class RecentsFragment extends Fragment {
     private ListAdapter adapter;
     private FlickrService flickrService;
     private AlertDialog dialog;
-
+    private SwipeRefreshLayout swipeRefreshLayout;
     private FlickrService service;
 
     public static RecentsFragment getInstance() {
@@ -64,11 +69,19 @@ public class RecentsFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_recents, container, false);
 
         Paper.init(getActivity());
+        setHasOptionsMenu(true);
         recyclerView = v.findViewById(R.id.recycler_recent);
         recyclerView.setHasFixedSize(true);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 3);
         recyclerView.setLayoutManager(gridLayoutManager);
 
+        swipeRefreshLayout = v.findViewById(R.id.swipe_refresh_recents);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadFlickrFetch(true);
+            }
+        });
         dialog = new SpotsDialog(getActivity());
 
         loadFlickrFetch(false);
@@ -76,12 +89,17 @@ public class RecentsFragment extends Fragment {
 
     }
 
+
+
     private void loadFlickrFetch(boolean isRefreshed) {
-//        if (!isRefreshed) {
-//            String cache = Paper.book().read("cache");
-//            if (cache != null && !cache.isEmpty() && !cache.equals("null")) {
-//                PhotoGallery photoGallery = new Gson().fromJson(cache, PhotoGallery.class);
-//            } else {
+        if (!isRefreshed) {
+            String cache = Paper.book().read("cache");
+            if (cache != null && !cache.isEmpty() && !cache.equals("null")) {
+                PhotoGallery photoGallery = new Gson().fromJson(cache, PhotoGallery.class);
+                adapter = new ListAdapter(getActivity(),photoGallery);
+                adapter.notifyDataSetChanged();
+                recyclerView.setAdapter(adapter);
+            } else {
                 dialog.show();
                 service.getInfo(Common.API_KEY, Common.extras, Common.perPage, Common.page).enqueue(new Callback<PhotoGallery>() {
                     @Override
@@ -100,27 +118,69 @@ public class RecentsFragment extends Fragment {
                         Log.e("Failure", "Failure" + t.getMessage());
                     }
                 });
-//            }
-//        } else {
-//            //swipeRefreshLayout.setRefreshing(true);
-//            service.getInfo(Common.API_KEY, Common.extras, Common.perPage, Common.page).enqueue(new Callback<PhotoGallery>() {
-//                @Override
-//                public void onResponse(Call<PhotoGallery> call, Response<PhotoGallery> response) {
-//                    adapter = new ListAdapter(getContext(), response.body());
-//                    adapter.notifyDataSetChanged();
-//                    recyclerView.setAdapter(adapter);
-//
-//                    //Save to cache
-//                    Paper.book().write("cache", new Gson().toJson(response.body()));
-//                   // swipeRefreshLayout.setRefreshing(false);
-//                }
-//
-//                @Override
-//                public void onFailure(Call<PhotoGallery> call, Throwable t) {
-//                    Log.e("Failure", "Failure" + t.getMessage());
-//                }
-//            });
-//        }
+            }
+        } else {
+            swipeRefreshLayout.setRefreshing(true);
+            service.getInfo(Common.API_KEY, Common.extras, Common.perPage, Common.page).enqueue(new Callback<PhotoGallery>() {
+                @Override
+                public void onResponse(Call<PhotoGallery> call, Response<PhotoGallery> response) {
+                    adapter = new ListAdapter(getContext(), response.body());
+                    adapter.notifyDataSetChanged();
+                    recyclerView.setAdapter(adapter);
+
+                    //Save to cache
+                    Paper.book().write("cache", new Gson().toJson(response.body()));
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+
+                @Override
+                public void onFailure(Call<PhotoGallery> call, Throwable t) {
+                    Log.e("Failure", "Failure" + t.getMessage());
+                }
+            });
+        }
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.toolbar_menu,menu);
+        super.onCreateOptionsMenu(menu, inflater);
+        final MenuItem item = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) item.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(query != "") {
+                    service.getSearchPhoto(Common.API_KEY, Common.extras, query).enqueue(new Callback<PhotoGallery>() {
+                        @Override
+                        public void onResponse(Call<PhotoGallery> call, Response<PhotoGallery> response) {
+                            adapter = new ListAdapter(getContext(), response.body());
+                            adapter.notifyDataSetChanged();
+                            recyclerView.setAdapter(adapter);
+
+                            //Save to cache
+                            Paper.book().write("cache", new Gson().toJson(response.body()));
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+
+                        @Override
+                        public void onFailure(Call<PhotoGallery> call, Throwable t) {
+
+                        }
+                    });
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                return false;
+            }
+        });
+
+    }
+
+
 }
 
