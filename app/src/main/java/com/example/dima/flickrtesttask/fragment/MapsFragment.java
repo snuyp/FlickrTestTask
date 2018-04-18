@@ -10,12 +10,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.dima.flickrtesttask.Interface.FlickrService;
 import com.example.dima.flickrtesttask.R;
@@ -134,10 +136,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                                 Double.parseDouble(location.getLatitude()),
                                 Double.parseDouble(location.getLongitude()));
                         String title = "";
-                        if (Common.photos.get(finalI).getTitle().length() > 20) {
-                            title = Common.photos.get(finalI).getTitle().substring(0, 20);
-                        } else {
-                            title = Common.photos.get(finalI).getTitle();
+                        try {
+                            if (Common.photos.get(finalI).getTitle().length() > 20) {
+                                title = Common.photos.get(finalI).getTitle().substring(0, 20);
+                            } else {
+                                title = Common.photos.get(finalI).getTitle();
+                            }
+                        }
+                        catch (NullPointerException e)
+                        {
+                            Log.e("Error",e.getMessage());
                         }
                         mMap.addMarker(new MarkerOptions().position(latLng).title(title)).isVisible();
                         dialog.dismiss();
@@ -165,6 +173,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 dialog.show();
                 Common.photos = null;
                 if (query != "") {
+
                     String geo = String.format("geo, %s", query);
                     service.getSearchPhoto(Common.API_KEY, Common.extras, Common.hasGeo, geo).enqueue(new Callback<PhotoGallery>() {
                         @Override
