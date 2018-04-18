@@ -25,6 +25,7 @@ import com.example.dima.flickrtesttask.R;
 import com.example.dima.flickrtesttask.adapter.ListAdapter;
 import com.example.dima.flickrtesttask.common.Common;
 import com.example.dima.flickrtesttask.model.PhotoGallery;
+import com.example.dima.flickrtesttask.model.PhotoLocation;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -151,9 +152,10 @@ public class RecentsFragment extends Fragment{
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if(query != "") {
-                    service.getSearchPhoto(Common.API_KEY, Common.extras, query).enqueue(new Callback<PhotoGallery>() {
+                    service.getSearchPhoto(Common.API_KEY, Common.extras,Common.hasGeo, query).enqueue(new Callback<PhotoGallery>() {
                         @Override
                         public void onResponse(Call<PhotoGallery> call, Response<PhotoGallery> response) {
+                            Common.photos = response.body().getPhotos().getPhoto();
                             adapter = new ListAdapter(getContext(), response.body());
                             adapter.notifyDataSetChanged();
                             recyclerView.setAdapter(adapter);

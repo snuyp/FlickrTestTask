@@ -11,6 +11,11 @@ public class Photo {
     @SerializedName("id")
     @Expose
     private String id;
+
+    @SerializedName("location")
+    @Expose
+    private Location location;
+
     @SerializedName("owner")
     @Expose
     private String owner;
@@ -48,6 +53,13 @@ public class Photo {
     public Photo() {
     }
 
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
     public String getId() {
         return id;
     }

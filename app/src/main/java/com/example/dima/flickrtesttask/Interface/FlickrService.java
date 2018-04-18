@@ -1,6 +1,7 @@
 package com.example.dima.flickrtesttask.Interface;
 
 import com.example.dima.flickrtesttask.model.PhotoGallery;
+import com.example.dima.flickrtesttask.model.PhotoLocation;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -25,14 +26,15 @@ public interface FlickrService {
     getSearchPhoto(
             @Query("api_key") String apiKey,
             @Query("extras") String extras,
+            @Query("has_geo") String hasGeo,
             @Query("text") String search
     );
 
-//    @GET("/services/rest/?method=flickr.photos.geo.getLocation&format=json&nojsoncallback=1")
-//    Call<>
-//    getInfo(
-//            @Query("api_key") String apiKey,
-//            @Query("")
-//            @Query("extras") String extras
-//    );
+    @GET("/services/rest/?method=flickr.photos.geo.getLocation&format=json&nojsoncallback=1")
+    Call<PhotoLocation>
+    getLocation(
+            @Query("api_key") String apiKey,
+            @Query("photo_id") String photoId,
+            @Query("extras") String extras
+    );
 }
